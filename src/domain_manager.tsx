@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Edit2, Mail, Calendar, Building2, Globe, AlertCircle, Check, Moon, Sun, ExternalLink } from 'lucide-react';
 
 const DomainManager = () => {
@@ -61,7 +60,7 @@ const DomainManager = () => {
     ];
 
     try {
-      const keys = await window.storage.list('domain:');
+      const keys = await window.localStorage.list('domain:');
       
       if (!keys || !keys.keys || keys.keys.length === 0) {
         for (const domain of excelData) {
@@ -73,7 +72,7 @@ const DomainManager = () => {
             renewalDate: domain.renewalDate,
             email: 'hakanterman@gmail.com'
           };
-          await window.storage.set(`domain:${domainData.id}`, JSON.stringify(domainData));
+          await window.localStorage.set(`domain:${domainData.id}`, JSON.stringify(domainData));
           await new Promise(resolve => setTimeout(resolve, 10));
         }
       }
@@ -87,11 +86,11 @@ const DomainManager = () => {
 
   const loadDomains = async () => {
     try {
-      const keys = await window.storage.list('domain:');
+      const keys = await window.localStorage.list('domain:');
       if (keys && keys.keys) {
         const loadedDomains = await Promise.all(
           keys.keys.map(async (key) => {
-            const result = await window.storage.get(key);
+            const result = await window.localStorage.get(key);
             return result ? JSON.parse(result.value) : null;
           })
         );
@@ -104,7 +103,7 @@ const DomainManager = () => {
 
   const saveDomain = async (domain) => {
     try {
-      await window.storage.set(`domain:${domain.id}`, JSON.stringify(domain));
+      await window.localStorage.set(`domain:${domain.id}`, JSON.stringify(domain));
       await loadDomains();
       showNotification('Domain başarıyla kaydedildi!', 'success');
     } catch (error) {
@@ -115,7 +114,7 @@ const DomainManager = () => {
   const deleteDomain = async (id) => {
     if (window.confirm('Bu domaini silmek istediğinize emin misiniz?')) {
       try {
-        await window.storage.delete(`domain:${id}`);
+        await window.localStorage.delete(`domain:${id}`);
         await loadDomains();
         showNotification('Domain silindi', 'success');
       } catch (error) {
